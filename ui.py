@@ -5,9 +5,169 @@ Encryption In Image 文本加密
 本文件完全开源，使用GPL3.0 开源许可证
 未经允许，请勿用于商业用途
 """
-from PyQt5.QtWidgets import QWidget, QApplication, QSizePolicy, QPushButton
+from PyQt5.QtWidgets import QWidget, QApplication, QSizePolicy, QPushButton, QGridLayout, QLabel
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QTimer
+
+
+class SideBarButton(QPushButton):
+    """内置侧边栏按钮类"""
+
+    def __init__(self, parent, text, select=False):
+        super().__init__(parent=parent, text=text)
+
+        self.setStyleSheet(
+            'background: #b8b8b8;'
+            'border: 0'
+        )
+
+        self.select = select
+
+    def sel(self):
+        self.select = True
+        if self.select:
+            self.setStyleSheet(
+                'background: #939393;'
+                'border: 0'
+            )
+        else:
+            self.setStyleSheet(
+                'background: #b8b8b8;'
+                'border: 0'
+            )
+
+    def de_sel(self):
+        self.select = True
+        if self.select:
+            self.setStyleSheet(
+                'background: #939393;'
+                'border: 0'
+            )
+        else:
+            self.setStyleSheet(
+                'background: #b8b8b8;'
+                'border: 0'
+            )
+
+    def enterEvent(self, a0) -> None:
+        if self.select:
+            def dis():
+                self.setStyleSheet(
+                    f'background: #{hex(self.i)[2:]}'
+                    f'{hex(self.i)[2:]}'
+                    f'{hex(self.i)[2:]};'
+                    f'border: 0'
+                )
+                self.i -= 1
+                if self.i <= 160 - 36:
+                    self.tmr.stop()
+
+            self.i = 184 - 36
+            self.tmr = QTimer()
+            self.tmr.setInterval(4)
+            self.tmr.timeout.connect(dis)  # noqa
+            self.tmr.start()
+        else:
+            def dis():
+                self.setStyleSheet(
+                    f'background: #{hex(self.i)[2:]}'
+                    f'{hex(self.i)[2:]}'
+                    f'{hex(self.i)[2:]};'
+                    f'border: 0'
+                )
+                self.i -= 1
+                if self.i <= 160:
+                    self.tmr.stop()
+
+            self.i = 184
+            self.tmr = QTimer()
+            self.tmr.setInterval(4)
+            self.tmr.timeout.connect(dis)  # noqa
+            self.tmr.start()
+
+    def leaveEvent(self, a0):
+        if self.select:
+            def dis():
+                self.setStyleSheet(
+                    f'background: #{hex(self.i)[2:]}'
+                    f'{hex(self.i)[2:]}'
+                    f'{hex(self.i)[2:]};'
+                    f'border: 0'
+                )
+                self.i += 1
+                if self.i >= 184 - 36:
+                    self.tmr.stop()
+
+            self.i = 160 - 36
+            self.tmr = QTimer()
+            self.tmr.setInterval(4)
+            self.tmr.timeout.connect(dis)  # noqa
+            self.tmr.start()
+        else:
+            def dis():
+                self.setStyleSheet(
+                    f'background: #{hex(self.i)[2:]}'
+                    f'{hex(self.i)[2:]}'
+                    f'{hex(self.i)[2:]};'
+                    f'border: 0'
+                )
+                self.i += 1
+                if self.i >= 184:
+                    self.tmr.stop()
+
+            self.i = 160
+            self.tmr = QTimer()
+            self.tmr.setInterval(4)
+            self.tmr.timeout.connect(dis)  # noqa
+            self.tmr.start()
+
+    def mousePressEvent(self, e):
+        if self.select:
+            def dis():
+                self.setStyleSheet(
+                    f'background: #{hex(self.i)[2:]}'
+                    f'{hex(self.i)[2:]}'
+                    f'{hex(self.i)[2:]};'
+                    f'border: 0'
+                )
+                self.i -= 1
+                if self.i <= 130 - 36:
+                    self.tmr.stop()
+
+            self.i = 160 - 36
+            self.tmr = QTimer()
+            self.tmr.setInterval(2)
+            self.tmr.timeout.connect(dis)  # noqa
+            self.tmr.start()
+        else:
+            def dis():
+                self.setStyleSheet(
+                    f'background: #{hex(self.i)[2:]}'
+                    f'{hex(self.i)[2:]}'
+                    f'{hex(self.i)[2:]};'
+                    f'border: 0'
+                )
+                self.i -= 1
+                if self.i <= 130:
+                    self.tmr.stop()
+
+            self.i = 160
+            self.tmr = QTimer()
+            self.tmr.setInterval(2)
+            self.tmr.timeout.connect(dis)  # noqa
+            self.tmr.start()
+
+    def mouseReleaseEvent(self, a0):
+        if self.select:
+            self.setStyleSheet(
+                'background: #939393;'
+                'border: 0'
+            )
+        else:
+            self.setStyleSheet(
+                'background: #b8b8b8;'
+                'border: 0'
+            )
 
 
 class EIIGUIWindow(QWidget):
@@ -34,6 +194,9 @@ class EIIGUIWindow(QWidget):
         # 初始化侧边栏
         self.initSideBar()
 
+        # 初始化各页面
+        self.initPage()
+
     def initSideBar(self):
         """
         初始化侧边栏
@@ -48,64 +211,32 @@ class EIIGUIWindow(QWidget):
         )
 
         # 侧边栏控件
-        self.bar_side_btn_home = QPushButton(self.bar_side, text='Encryption In Image 主页')
-        self.bar_side_btn_home.setStyleSheet(
-            'background: #b8b8b8;'
-            'border: 0'
-        )
-        self.bar_side_btn_home.enterEvent = self.bar_side_btn_home_event_enter
-        self.bar_side_btn_home.leaveEvent = self.bar_side_btn_home_event_leave
+        self.bar_side_btn_home = SideBarButton(self.bar_side, text='Encryption In Image 主页')
+        self.bar_side_btn_home.sel()
         self.bar_side_btn_home.setGeometry(0, 0, 300, 40)
 
-        self.bar_side_btn_enc = QPushButton(self.bar_side, text='文本加密')
-        self.bar_side_btn_enc.setStyleSheet(
-            'background: #b8b8b8;'
-            'border: 0'
+        self.bar_side_btn_home = SideBarButton(self.bar_side, text='文本加密')
+        self.bar_side_btn_home.setGeometry(0, 40, 300, 40)
+
+        self.bar_side_btn_home = SideBarButton(self.bar_side, text='文本解密')
+        self.bar_side_btn_home.setGeometry(0, 80, 300, 40)
+
+    def initPage(self):
+        # 主页
+        self.pge_home = QWidget(self)
+        self.pge_home.setGeometry(300, 0, self.width() - 300, self.height())
+        self.pge_home.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Ignored)
+        self.pge_home.setStyleSheet(
+            'background: #e6e6e6;'
         )
-        self.bar_side_btn_enc.setGeometry(0, 40, 300, 40)
 
-        self.bar_side_btn_dec = QPushButton(self.bar_side, text='文本解密')
-        self.bar_side_btn_dec.setStyleSheet(
-            'background: #b8b8b8;'
-            'border: 0'
-        )
-        self.bar_side_btn_dec.setGeometry(0, 80, 300, 40)
+        self.pge_home_main_layout = QGridLayout()
+        self.pge_home.setLayout(self.pge_home_main_layout)
 
-    def bar_side_btn_home_event_enter(self, event):
-        def dis():
-            self.bar_side_btn_home.setStyleSheet(
-                f'background: #{hex(self.bar_side_btn_home.i)[2:]}'
-                f'{hex(self.bar_side_btn_home.i)[2:]}'
-                f'{hex(self.bar_side_btn_home.i)[2:]};'
-                f'border: 0'
-            )
-            self.bar_side_btn_home.i -= 1
-            if self.bar_side_btn_home.i <= 160:
-                self.bar_side_btn_home_event_enter_tmr.stop()
+        self.pge_home_main_layout.addWidget(self.pge_home_main_label)
 
-        self.bar_side_btn_home.i = 184
-        self.bar_side_btn_home_event_enter_tmr = QTimer()
-        self.bar_side_btn_home_event_enter_tmr.setInterval(4)
-        self.bar_side_btn_home_event_enter_tmr.timeout.connect(dis)  # noqa
-        self.bar_side_btn_home_event_enter_tmr.start()
-
-    def bar_side_btn_home_event_leave(self, event):
-        def dis():
-            self.bar_side_btn_home.setStyleSheet(
-                f'background: #{hex(self.bar_side_btn_home.i)[2:]}'
-                f'{hex(self.bar_side_btn_home.i)[2:]}'
-                f'{hex(self.bar_side_btn_home.i)[2:]};'
-                f'border: 0'
-            )
-            self.bar_side_btn_home.i += 1
-            if self.bar_side_btn_home.i >= 184:
-                self.bar_side_btn_home_event_enter_tmr.stop()
-
-        self.bar_side_btn_home.i = 160
-        self.bar_side_btn_home_event_enter_tmr = QTimer()
-        self.bar_side_btn_home_event_enter_tmr.setInterval(4)
-        self.bar_side_btn_home_event_enter_tmr.timeout.connect(dis)  # noqa
-        self.bar_side_btn_home_event_enter_tmr.start()
+    def resizeEvent(self, a0) -> None:
+        self.pge_home.setGeometry(300, 0, self.width() - 300, self.height())
 
 
 def main():
