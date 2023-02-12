@@ -3,10 +3,8 @@ Encryption In Image 文本加密
 开源接口
 
 本接口完全开源，使用GPL3.0 开源许可证
-未经允许，请勿用于商业用途
 """
 import random
-
 import numpy
 from PIL import Image
 
@@ -67,11 +65,13 @@ def image_save(image, path):
     :param path: str
     :return: None
     """
-    pimg = Image.fromarray(image)
+    img = image.copy()
+    img = img.astype(numpy.uint8)
+    pimg = Image.fromarray(img)
     pimg.save(path)
 
 
-def encode_text(image: numpy.ndarray, text, key=None):
+def encode_text(image: numpy.ndarray, text, key=None, des_image=False):
     """
     源于EII - Beta算法的文本加密方法
 
@@ -102,6 +102,11 @@ def encode_text(image: numpy.ndarray, text, key=None):
 
     # 获取图像的正负值
     image_pn = numpy.where(image > 127, -1, 1)[0:length * 3 + 6]
+    image_des = image[0:length * 3 + 6]
+
+    # 破坏原图
+    a = numpy.where(image > 127, -1, 1) * numpy.random.randint(0, 27, image.shape)
+    image = image + a
 
     # 更改原图
     re_array = numpy.array([])
@@ -116,12 +121,12 @@ def encode_text(image: numpy.ndarray, text, key=None):
     for x in u_array:
         re_array = numpy.append(re_array, _to128base(x))
 
-    image[0:length * 3 + 6] = image_pn * re_array + image[0:length * 3 + 6]
+    image[0:length * 3 + 6] = image_pn * re_array + image_des
 
     return numpy.reshape(image, shape)
 
 
-def decode_text(eii_image: numpy.ndarray, clean_image: numpy.ndarray,key=None):
+def decode_text(eii_image: numpy.ndarray, clean_image: numpy.ndarray, key=None):
     """
     源于EII - Beta算法的文本解密方法
 
@@ -170,11 +175,11 @@ def _string_enc(text: str, key: int):
     i = 0
 
     length = int(key)
-    if len(key) >= 5:
-        length = 16384
+    if len(key) >= 3:
+        length = 1024
 
     for x in text:
-        random.seed(int(key[i % (len(key) - 1)]))
+        random.seed(int(key[i % (len(key)) - 1]))
         enc_text += chr(ord(x) + random.randint(1, length))
 
         i += 1
@@ -188,11 +193,11 @@ def _string_dec(enc: str, key: int):
     i = 0
 
     length = int(key)
-    if len(key) >= 5:
-        length = 16384
+    if len(key) >= 3:
+        length = 1024
 
     for x in enc:
-        random.seed(int(key[i % (len(key) - 1)]))
+        random.seed(int(key[i % (len(key)) - 1]))
         dec_text += chr(ord(x) - random.randint(1, length))
 
         i += 1

@@ -12,8 +12,6 @@ Encryption In Image 文本加密
 README.md
 
 本文件仅为程序入口，不包含主代码部分
-
-未经允许，请勿用于商业用途
 """
 import ui
 
