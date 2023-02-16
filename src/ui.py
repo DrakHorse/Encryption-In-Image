@@ -266,7 +266,7 @@ class EIIGUIWindow(QWidget):
         self.pge_home_main_label.setHtml(
             f"""
 <h1>Encryption In Image</h1>
-Version 0.6.0
+Version 0.6.2
 
 <h2>0. 简介</h2>
 <h3>0.1 什么是 Encryption In Image</h3>
@@ -437,8 +437,8 @@ EII接口完全开源，文件位于src目录下的eii.py
         self.pge_dec_main_layout.addWidget(QLabel(self.pge_dec, text="解密文本:"), 6, 0)  # noqa
         self.pge_dec_main_layout.addWidget(self.pge_dec_room.inp_text, 6, 1)
         self.pge_dec_main_layout.addWidget(self.pge_dec_room.btn_dec, 7, 0, 7, 2)
-        self.pge_dec_main_layout.addWidget(self.pge_dec_room.btn_save, 8, 0)
-        self.pge_dec_main_layout.addWidget(self.pge_dec_room.cbb_file_encoding, 8, 1)
+        self.pge_dec_main_layout.addWidget(self.pge_dec_room.btn_save, 9, 0)
+        self.pge_dec_main_layout.addWidget(self.pge_dec_room.cbb_file_encoding, 9, 1)
 
         self.pge_dec_main_layout.setColumnStretch(0, 1)
         self.pge_dec_main_layout.setColumnStretch(1, 4)
@@ -463,6 +463,8 @@ EII接口完全开源，文件位于src目录下的eii.py
 
     def To_page_enc(self):
         """切换到加密界面"""
+        self.enc_eii_image = None
+
         self.bar_side_btn_home.de_sel()
         self.bar_side_btn_dec.de_sel()
         self.bar_side_btn_enc.sel()
@@ -672,15 +674,19 @@ EII接口完全开源，文件位于src目录下的eii.py
             self.Log_enc("发生错误，加密已终止")
 
     def C_enc_save(self, a0):
-        if not self.enc_eii_image.any():
-            print(1145)
+        try:
+            if not self.enc_eii_image.any():
+                self.Log_enc("保存图像失败：没有加密过的图像")
+                return
+        except:
             self.Log_enc("保存图像失败：没有加密过的图像")
             return
 
-
         directory = QFileDialog.getSaveFileName(self, "选择保存路径", "image.png",
                                                 "PNG Files (*.png);;BMP Files (*.bmp);;All Files (*)")
-        eii.image_save(self.enc_eii_image, directory[0])
+        if directory[0]:
+            eii.image_save(self.enc_eii_image, directory[0])
+        self.Log_enc("图像保存完成")
 
     def C_dec_sel_cimage(self, a0):
         directory = QFileDialog.getOpenFileName(self, "选取原图", '',
@@ -753,5 +759,3 @@ def main():
     egw = EIIGUIWindow()
     egw.show()
     app.exec_()
-
-main()
