@@ -672,13 +672,11 @@ EII接口完全开源，文件位于src目录下的eii.py
             self.Log_enc("发生错误，加密已终止")
 
     def C_enc_save(self, a0):
-        try:
-            if not self.enc_eii_image.all():
-                self.Log_enc("保存图像失败：没有加密过的图像")
-                return
-        except AttributeError:
+        if not self.enc_eii_image.any():
+            print(1145)
             self.Log_enc("保存图像失败：没有加密过的图像")
             return
+
 
         directory = QFileDialog.getSaveFileName(self, "选择保存路径", "image.png",
                                                 "PNG Files (*.png);;BMP Files (*.bmp);;All Files (*)")
@@ -755,3 +753,5 @@ def main():
     egw = EIIGUIWindow()
     egw.show()
     app.exec_()
+
+main()
