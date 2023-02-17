@@ -266,7 +266,7 @@ class EIIGUIWindow(QWidget):
         self.pge_home_main_label.setHtml(
             f"""
 <h1>Encryption In Image</h1>
-Version 0.6.2
+Version 0.6.3
 
 <h2>0. 简介</h2>
 <h3>0.1 什么是 Encryption In Image</h3>
@@ -744,10 +744,11 @@ EII接口完全开源，文件位于src目录下的eii.py
     def C_dec_save_file(self, a0):
         directory = QFileDialog.getSaveFileName(self, "选择保存路径", "text.txt",
                                                 "All Files (*)")
-        file = open(directory[0], 'w', encoding=self.pge_dec_room.cbb_file_encoding.currentText())
-        file.write(self.pge_dec_room.inp_text.toPlainText())
-        file.close()
-        self.Log_dec("已保存解密文本")
+        if directory[0]:
+            file = open(directory[0], 'w', encoding=self.pge_dec_room.cbb_file_encoding.currentText())
+            file.write(self.pge_dec_room.inp_text.toPlainText())
+            file.close()
+            self.Log_dec("已保存解密文本")
 
 
 def main():
