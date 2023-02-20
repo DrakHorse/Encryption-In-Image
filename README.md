@@ -1,5 +1,5 @@
 # Encryption In Image
-Version 0.6.3
+Version 0.6.4
 
 ## 0. 简介
 ### 0.1 什么是 Encryption In Image
