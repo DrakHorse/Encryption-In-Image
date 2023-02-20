@@ -669,6 +669,10 @@ EII接口完全开源，文件位于src目录下的eii.py
                                                  self.pge_enc_room.cbb_des_image.isChecked())
 
             self.Log_enc("加密已完成")
+        except ValueError:
+            self.Log_enc("发生错误：图片大小无法存储文本")
+            self.Log_enc("请尝试更换为更大的图片或减少文本长度")
+            self.Log_enc("发生错误，加密已终止")
         except Exception as e:
             self.Log_enc("未知错误：" + str(e))
             self.Log_enc("发生错误，加密已终止")
