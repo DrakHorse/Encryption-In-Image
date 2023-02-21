@@ -266,7 +266,7 @@ class EIIGUIWindow(QWidget):
         self.pge_home_main_label.setHtml(
             f"""
 <h1>Encryption In Image</h1>
-Version 0.6.3
+Version 0.6.4
 
 <h2>0. 简介</h2>
 <h3>0.1 什么是 Encryption In Image</h3>
